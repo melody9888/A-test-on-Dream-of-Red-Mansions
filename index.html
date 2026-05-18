@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>红楼梦人格镜 · 你是大观园中的谁</title>
+  <style>
+    :root {
+      --bg: #fefaf5;
+      --panel: #ffffff;
+      --text: #2b2b2b;
+      --muted: #8b6b5a;
+      --line: #f0e2d4;
+      --soft: #fff5ed;
+      --accent: #b75f3a;
+      --accent-strong: #9b4a2c;
+      --shadow: 0 16px 40px rgba(88, 44, 28, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "华文楷书", "KaiTi", serif;
+      background: linear-gradient(135deg, #fdf7f0 0%, #f9ede3 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 28px;
+      margin-top: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "🌺";
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      font-size: 80px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--accent-strong);
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 999px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      font-weight: 600;
+    }
+    .hero .sub {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .hero-minimal {
+      min-height: 48vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 42px 20px;
+    }
+    .hero-minimal::after { display: none; }
+    .hero-minimal h1 {
+      max-width: none;
+      margin: 0;
+    }
+    .hero-actions-single {
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease;
+      font: inherit;
+    }
+    button:hover { transform: translateY(-2px); }
+    button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+
+    .btn-primary {
+      background: var(--accent-strong);
+      color: #fff;
+      padding: 14px 26px;
+      border-radius: 40px;
+      box-shadow: 0 8px 20px rgba(155, 74, 44, 0.2);
+      font-weight: 600;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: var(--accent-strong);
+      padding: 14px 26px;
+      border-radius: 40px;
+      border: 1px solid var(--line);
+      font-weight: 600;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .test-wrap, .result-wrap {
+      margin-top: 22px;
+      padding: 22px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .progress {
+      flex: 1;
+      min-width: 240px;
+      height: 10px;
+      background: #f0e1d4;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress > span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #c98a6b, #9b4a2c);
+      border-radius: inherit;
+      transition: width .22s ease;
+    }
+    .progress-text {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .question-list {
+      display: grid;
+      gap: 16px;
+    }
+    .question {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: #ffffff;
+    }
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+    .question-title {
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      transition: all 0.1s;
+    }
+    .option:hover {
+      border-color: #c9aa91;
+      background: #fdf7f0;
+    }
+    .option input {
+      margin-top: 3px;
+      accent-color: var(--accent-strong);
+      transform: scale(1.05);
+      flex-shrink: 0;
+    }
+    .option-code {
+      font-weight: 800;
+      color: var(--accent-strong);
+      min-width: 22px;
+    }
+    .actions-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* 结果区域 */
+    .result-top {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .poster-box {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 20px;
+      background: linear-gradient(145deg, #fffaf3, #fff4ea);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .poster-image {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      background: #fef0e6;
+    }
+    .poster-caption {
+      font-size: 14px;
+      color: var(--accent-strong);
+      font-style: italic;
+      border-top: 1px dashed var(--line);
+      padding-top: 12px;
+      margin-top: 8px;
+    }
+    .type-box {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 24px;
+      background: #ffffff;
+    }
+    .type-kicker {
+      font-size: 12px;
+      color: var(--accent-strong);
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .type-name {
+      font-size: clamp(30px, 5vw, 48px);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .match {
+      margin: 16px 0 12px;
+      display: inline-block;
+      background: var(--soft);
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 13px;
+      color: var(--accent-strong);
+      border: 1px solid var(--line);
+    }
+    .type-subname {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .analysis-box, .dim-box, .note-box {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 20px;
+      background: white;
+      margin-top: 20px;
+    }
+    .analysis-box h3, .dim-box h3, .note-box h3 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dim-list {
+      display: grid;
+      gap: 12px;
+    }
+    .dim-item {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 0;
+    }
+    .dim-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .dim-item-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .dim-item-score {
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+    .dim-item p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .note-box p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .result-actions {
+      margin-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .author-box {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: #fffdf9;
+    }
+    .author-box summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+    .author-box summary::-webkit-details-marker { display: none; }
+    .author-box summary::after {
+      content: '📜 展开';
+      font-size: 12px;
+      color: var(--accent);
+    }
+    .author-box[open] summary::after { content: '📖 收起'; }
+    .author-content { padding: 0 18px 18px; color: #5b4c40; font-size: 14px; line-height: 1.8; }
+
+    @media (max-width: 760px) {
+      .result-top { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <!-- 封面页 -->
+  <section id="intro" class="screen active">
+    <div class="hero card hero-minimal">
+      <div class="eyebrow">👑 大观园 · 脂砚斋闲笔</div>
+      <h1>测测你是<b>红楼梦中的谁？</b></h1>
+      <p class="sub">十五道心性暗语 · 照见你骨子里的红楼情性。</p>
+      <div class="hero-actions hero-actions-single">
+        <button id="startBtn" class="btn-primary"> 🎉 入园测试</button>
+      </div>
+      <div style="margin-top: 2rem; font-size: 0.8rem; color: #9b7a66;">
+        <span>基于人格五维模型 · 邂逅金陵十二钗与红尘诸相</span>
+      </div>
+      <details style="margin-top: 1.5rem;">
+        <summary style="font-size: 0.75rem; color: #b48c6f; cursor: pointer;"> 👀 关于此镜</summary>
+        <div style="color: #8d6b57; padding-top: 0.8rem; font-size: 0.75rem; text-align: left;">
+          <p>本测试萃取红楼人物性格精髓，将十五项心性因子投射至十六位经典角色。非严肃学术，只作风月闲谈。您所答即所映，金陵一梦，照见</p>
+          <p>👑 每个选项都在悄悄描摹你的性格底色，最终匹配最相似的红楼梦中人。</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 测试页（id 统一为 questions） -->
+  <section id="questions" class="screen">
+    <div class="test-wrap card">
+      <div class="topbar">
+        <div class="progress"><span id="progressBar"></span></div>
+        <div class="progress-text" id="progressText">0 / 30</div>
+      </div>
+      <div id="questionList" class="question-list"></div>
+      <div class="actions-bottom">
+        <div class="hint" id="testHint">🌸 请依本心作答，全选完后将浮现你的红楼人物。</div>
+        <div style="display:flex; gap:12px;">
+          <button id="backIntroBtn" class="btn-secondary">🏮 返园门</button>
+          <button id="submitBtn" class="btn-primary" disabled>✨ 解签 · 金陵判词</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 结果页 -->
+  <section id="result" class="screen">
+    <div class="result-wrap card">
+      <div class="result-top">
+        <div class="poster-box" id="posterBox">
+          <img id="posterImage" class="poster-image" src="image/R.jpg" alt="红楼梦人物意象" style="display:block; width:100%; max-height:200px; object-fit:contain;" />
+          <div id="posterCaption" class="poster-caption"></div>
+        </div>
+        <div class="type-box">
+          <div class="type-kicker" id="resultModeKicker">红楼梦中人</div>
+          <div class="type-name" id="resultTypeName">贾宝玉</div>
+          <div class="match" id="matchBadge">情榜考语 · 匹配度</div>
+          <div class="type-subname" id="resultTypeSub">“无故寻愁觅恨，有时似傻如狂”</div>
+        </div>
+      </div>
+      <div class="analysis-box">
+        <h3>📖 人物判词 · 性情解读</h3>
+        <p id="resultDesc"></p>
+      </div>
+      <div class="dim-box">
+        <h3>🎭 十五情性维度 · 映照金陵</h3>
+        <div id="dimList" class="dim-list"></div>
+      </div>
+      <div class="note-box">
+        <h3>🍃 脂批闲话</h3>
+        <p id="funNote">此乃风月宝鉴，照见心性，不必执着。大观园里各有因果，你像谁，都不过是一场有趣的照影。</p>
+      </div>
+      <details class="author-box">
+        <summary>📜 原作者·改编志</summary>
+        <div class="author-content">
+          <p>本测试创意衍生自人格心理学范式，将红楼梦人物性格投射进15维空间。感谢曹公笔下群芳，令后世得以借角色观自己。🌙 所有匹配仅供娱乐，愿君玩得尽兴，亦不忘“假作真时真亦假”。</p>
+          <p>十六角色对应不同心性原型，算法依据维度加权距离匹配，愿你寻得心之所向的那位故人。</p>
+        </div>
+      </details>
+      <div class="result-actions">
+        <button id="restartBtn" class="btn-secondary">🪷 重新测试</button>
+        <button id="toTopBtn" class="btn-primary">🏮 回到园门</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ---------- 红楼梦人物库（16人）----------
+  const DREAM_LIBRARY = {
+    "JIA_BAOYU": { code: "JIA_BAOYU", cn: "贾宝玉", intro: "怡红公子 · 情不情", desc: "你骨子里是至情至性的贾宝玉。厌恶功名利禄，珍视女儿清净，温柔又叛逆。重情不重礼，有一颗赤子之心，在浊世中固执地守护纯粹。旁人笑你痴狂，你却道‘女儿是水做的骨肉’。", emblem: "通灵宝玉" },
+    "LIN_DAIYU": { code: "LIN_DAIYU", cn: "林黛玉", intro: "潇湘妃子 · 世外仙姝", desc: "你如林黛玉一般，才情孤高，敏感细腻，爱憎分明。看透世态炎凉却不愿低头，多愁善感却自有风骨。心思如诗，眼泪为还情债，是极致的理想主义者。", emblem: "绛珠仙草" },
+    "XUE_BAOCHAI": { code: "XUE_BAOCHAI", cn: "薛宝钗", intro: "蘅芜君 · 山中高士", desc: "你像薛宝钗，温厚周全，世事洞明。举止娴雅，善解人意，却又隐忍克制。你活得通透圆融，懂得人情法则，是众人眼里的‘稳重佳人’。", emblem: "金锁" },
+    "WANG_XIFENG": { code: "WANG_XIFENG", cn: "王熙凤", intro: "凤辣子 · 巾帼英雄", desc: "你精明泼辣，杀伐果断，八面玲珑。治家理财有手腕，嘴上从不饶人，骨子里是好强要胜的凤辣子。能力超群，爱恨鲜明，是脂粉队里的英雄。", emblem: "协理宁国府" },
+    "SHI_XIANGYUN": { code: "SHI_XIANGYUN", cn: "史湘云", intro: "枕霞旧友 · 是真名士自风流", desc: "你开朗豪爽，不拘小节，心直口快。醉卧芍药裀，割腥啖膻，你是大观园中最豁达乐观的湘云。英豪阔大宽宏量，从未将儿女私情略萦心上。", emblem: "金麒麟" },
+    "JIA_TANCHUN": { code: "JIA_TANCHUN", cn: "贾探春", intro: "蕉下客 · 才自精明志自高", desc: "你是贾探春，聪慧果敢，有远见有魄力。不甘平庸，想有一番作为。精明能干，自号‘蕉下客’，是带刺的玫瑰，谁也不能轻慢。", emblem: "秋爽斋" },
+    "JIA_YINGCHUN": { code: "JIA_YINGCHUN", cn: "贾迎春", intro: "菱洲 · 懦小姐", desc: "你像贾迎春，温顺善良却软弱怕事，与世无争。信奉‘多一事不如少一事’，逆来顺受，内心保留着单纯的安宁，但缺少决断的勇气。", emblem: "茉莉花" },
+    "JIA_XICHUN": { code: "JIA_XICHUN", cn: "贾惜春", intro: "藕榭 · 冷美人", desc: "你孤僻清冷，看透人情冷暖，一心想要斩断尘缘。惜春一般，对世事冷淡，守护自己的精神净土，心性疏离却自有智慧。", emblem: "暖香坞" },
+    "MIAO_YU": { code: "MIAO_YU", cn: "妙玉", intro: "栊翠庵 · 畸人", desc: "你如妙玉，清高孤傲，洁癖成性。才华横溢却不愿入俗，自视甚高，身在空门却恋红尘一角，高傲得让人难以靠近，内心却极为纯粹。", emblem: "绿玉斗" },
+    "LI_WAN": { code: "LI_WAN", cn: "李纨", intro: "稻香老农 · 竹篱茅舍自甘心", desc: "你安分守己，温婉隐忍，淡泊名利。如李纨一般，与世无争，一心抚育子女，清心寡欲，却也藏着通透的智慧。", emblem: "稻香村" },
+    "QIN_KEQING": { code: "QIN_KEQING", cn: "秦可卿", intro: "兼美 · 风情袅娜", desc: "你温柔平和，情商极高，行事细腻周全。秦可卿一般，生得袅娜纤巧，行事又温柔和平，是众人眼中完美的存在，神秘而令人心折。", emblem: "天香楼" },
+    "QING_WEN": { code: "QING_WEN", cn: "晴雯", intro: "芙蓉女儿 · 心比天高", desc: "你心高气傲，伶牙俐齿，刚烈正直。晴雯一样，宁折不弯，敢爱敢恨。手巧心灵，却不容于世俗，纯真又火爆。", emblem: "撕扇子" },
+    "XI_REN": { code: "XI_REN", cn: "袭人", intro: "贤袭人 · 似桂如兰", desc: "你温柔体贴，隐忍周到，事事求全。袭人一般，侍上以敬，待下以宽，识大体知进退，是公认的贤人，却也藏着自己的执念。", emblem: "汗巾" },
+    "PING_ER": { code: "PING_ER", cn: "平儿", intro: "俏平儿 · 清正通透", desc: "你善良聪慧，宽容公正，在夹缝中力求平衡。平儿是凤姐的左膀右臂，却从不仗势欺人，温和通透，是红楼梦里难得的好性子。", emblem: "虾须镯" },
+    "JIA_MU": { code: "JIA_MU", cn: "贾母", intro: "老太君 · 福寿双全", desc: "你睿智慈祥，阅历丰富，疼爱晚辈又威严有度。贾母一般，是整个家族的定海神针，通达人情，看惯兴衰，大智若愚。", emblem: "慧纹" },
+    "LIU_LAOLAO": { code: "LIU_LAOLAO", cn: "刘姥姥", intro: "村妪 · 大智若愚", desc: "你如刘姥姥，质朴幽默，知恩图报，接地气又不乏智慧。虽然出身乡野，却能给人带来欢笑和生机，看透世事而保持豁达善良。", emblem: "巧姐恩人" }
+  };
+
+  // 人物十五维映射表 (H/M/L)
+  const NORMAL_DREAM_TYPES = [
+    { code: "JIA_BAOYU", pattern: "MHM-HHL-HMH-LLH-HMH" },
+    { code: "LIN_DAIYU", pattern: "LLH-LLH-HML-MLH-LML" },
+    { code: "XUE_BAOCHAI", pattern: "HMM-HMH-HHH-HMH-HML" },
+    { code: "WANG_XIFENG", pattern: "HHL-HHH-LLL-HHH-MLH" },
+    { code: "SHI_XIANGYUN", pattern: "HHM-HHL-MML-MHH-HHL" },
+    { code: "JIA_TANCHUN", pattern: "HMM-HML-MLM-HHM-HHM" },
+    { code: "JIA_YINGCHUN", pattern: "LLM-LLL-LLL-LML-LLL" },
+    { code: "JIA_XICHUN", pattern: "LHL-LLM-LML-MLL-LLH" },
+    { code: "MIAO_YU", pattern: "LHH-LHL-HLH-MHM-LHH" },
+    { code: "LI_WAN", pattern: "MLL-MHM-MMM-LMM-MLM" },
+    { code: "QIN_KEQING", pattern: "HMM-HHH-MHM-MHM-HMM" },
+    { code: "QING_WEN", pattern: "HHL-MLL-HLM-MLL-LHL" },
+    { code: "XI_REN", pattern: "MMH-HMM-HML-MHM-MHM" },
+    { code: "PING_ER", pattern: "HMH-HMM-MMH-MHM-HHL" },
+    { code: "JIA_MU", pattern: "HHH-HHM-HMH-HHH-HHH" },
+    { code: "LIU_LAOLAO", pattern: "MHM-MLL-HML-MLM-HLL" }
+  ];
+
+  // 十五维度定义
+  const dimensionMeta = {
+    S1: { name: '自尊与自我信念', model: '自我' }, S2: { name: '自我认知清晰度', model: '自我' }, S3: { name: '核心价值驱力', model: '自我' },
+    E1: { name: '依恋安全感', model: '情感' }, E2: { name: '情感投入深度', model: '情感' }, E3: { name: '边界与依赖倾向', model: '情感' },
+    A1: { name: '世界观底色', model: '态度' }, A2: { name: '规则灵活度', model: '态度' }, A3: { name: '人生意义感', model: '态度' },
+    Ac1: { name: '动机导向', model: '行动' }, Ac2: { name: '决策风格', model: '行动' }, Ac3: { name: '执行模式', model: '行动' },
+    So1: { name: '社交主动性', model: '社交' }, So2: { name: '人际边界感', model: '社交' }, So3: { name: '表达真实度', model: '社交' }
+  };
+  const dimensionOrder = ['S1','S2','S3','E1','E2','E3','A1','A2','A3','Ac1','Ac2','Ac3','So1','So2','So3'];
+
+  // 30道红楼梦情境题
+  const questions = [
+    { id: 'q1', dim: 'S1', text: '在大观园诗社中，众人夸你新作的诗句，你心里更认同哪种想法？', options: [{ label: '惶恐，觉得自己不配', value: 1 },{ label: '半信半疑，但暗自高兴', value: 2 },{ label: '我的才华本就值得欣赏', value: 3 }] },
+    { id: 'q2', dim: 'S1', text: '倘若长辈当众说你不成器，你第一反应是？', options: [{ label: '深深自责，觉得自己果然无能', value: 1 },{ label: '表面平静，心里较劲', value: 2 },{ label: '相信自己的价值，不被一句话击垮', value: 3 }] },
+    { id: 'q3', dim: 'S2', text: '你是否清楚自己真正喜欢什么、厌恶什么？', options: [{ label: '常常迷茫，看不清自己', value: 1 },{ label: '大致知道，但有时动摇', value: 2 },{ label: '非常清晰，很难被他人左右', value: 3 }] },
+    { id: 'q4', dim: 'S2', text: '夜深人静时，你对自己的评价是否稳定？', options: [{ label: '忽高忽低，像风中的灯', value: 1 },{ label: '偶尔波动，但总体有数', value: 2 },{ label: '始终明白自己的斤两', value: 3 }] },
+    { id: 'q5', dim: 'S3', text: '为了心中认定的目标，你愿意付出多大代价？', options: [{ label: '随缘，不想太累', value: 1 },{ label: '付出一定努力，但求无愧', value: 2 },{ label: '不达目的不罢休，赴汤蹈火', value: 3 }] },
+    { id: 'q6', dim: 'S3', text: '荣国府里长辈推崇功名仕途，你心中如何想？', options: [{ label: '做官富贵与我无关', value: 1 },{ label: '有更好，没有也罢', value: 2 },{ label: '必须出人头地证明自己', value: 3 }] },
+    { id: 'q7', dim: 'E1', text: '挚友几日不与你联络，你会感到不安吗？', options: [{ label: '非常不安，担心被抛弃', value: 1 },{ label: '偶尔多想，但能安抚自己', value: 2 },{ label: '相信情谊，不会胡思乱想', value: 3 }] },
+    { id: 'q8', dim: 'E1', text: '在亲密关系中，你更倾向于哪种状态？', options: [{ label: '总害怕对方离开', value: 1 },{ label: '有顾虑但能调节', value: 2 },{ label: '安全感充足，坦然相处', value: 3 }] },
+    { id: 'q9', dim: 'E2', text: '当你喜欢一个人时，情感投入的程度如何？', options: [{ label: '有所保留，害怕受伤', value: 1 },{ label: '看对方态度付出', value: 2 },{ label: '倾尽所有，毫无保留', value: 3 }] },
+    { id: 'q10', dim: 'E2', text: '宝玉挨打后，你会怎么对待他？', options: [{ label: '默默关心，点到为止', value: 1 },{ label: '适度劝慰但保持分寸', value: 2 },{ label: '心疼到落泪，恨不得替他', value: 3 }] },
+    { id: 'q11', dim: 'E3', text: '恋爱或友谊中，你更看重亲密还是独立？', options: [{ label: '恨不得时刻黏在一起', value: 1 },{ label: '两者平衡，偶尔黏偶尔独', value: 2 },{ label: '必须保留个人空间，不可侵犯', value: 3 }] },
+    { id: 'q12', dim: 'E3', text: '朋友频繁找你倾诉心事，你会？', options: [{ label: '很开心，享受被需要', value: 1 },{ label: '看情况，能帮则帮', value: 2 },{ label: '容易感到负担，想保持距离', value: 3 }] },
+    { id: 'q13', dim: 'A1', text: '你相信大多数人本性善良吗？', options: [{ label: '人心险恶，不可轻信', value: 1 },{ label: '善恶参半，谨慎看待', value: 2 },{ label: '坚信人性本善，愿意付出信任', value: 3 }] },
+    { id: 'q14', dim: 'A1', text: '走在街上看到乞丐，你会怎么想？', options: [{ label: '多半是骗子', value: 1 },{ label: '真假难辨，但偶尔同情', value: 2 },{ label: '可怜人，应尽力相助', value: 3 }] },
+    { id: 'q15', dim: 'A2', text: '面对家族的陈规旧矩，你的态度是？', options: [{ label: '恨不能全部打破', value: 1 },{ label: '必要的规矩遵守，过分的可改', value: 2 },{ label: '礼法不可废，循规蹈矩', value: 3 }] },
+    { id: 'q16', dim: 'A2', text: '做一件事时，你更喜欢按计划还是随心意？', options: [{ label: '讨厌束缚，随心而为', value: 1 },{ label: '大致计划，允许变通', value: 2 },{ label: '严格遵守章程，讨厌意外', value: 3 }] },
+    { id: 'q17', dim: 'A3', text: '你觉得自己的人生有明确的使命或意义吗？', options: [{ label: '毫无意义，得过且过', value: 1 },{ label: '有时觉得有，有时虚无', value: 2 },{ label: '有强烈的目标感', value: 3 }] },
+    { id: 'q18', dim: 'A3', text: '你如何看待功名利禄与内心的安宁？', options: [{ label: '富贵如浮云，开心重要', value: 1 },{ label: '追求名利但也求心安', value: 2 },{ label: '成就和意义高于一切', value: 3 }] },
+    { id: 'q19', dim: 'Ac1', text: '做事时，你是为了“获得成果”还是“避免失败”？', options: [{ label: '主要是怕出错受罚', value: 1 },{ label: '两者兼有', value: 2 },{ label: '为了成功可以冒险', value: 3 }] },
+    { id: 'q20', dim: 'Ac1', text: '面对一个困难的任务，你首先想到的是？', options: [{ label: '好麻烦，做不好怎么办', value: 1 },{ label: '尽力而为，结果看命', value: 2 },{ label: '太好了，正是施展拳脚的机会', value: 3 }] },
+    { id: 'q21', dim: 'Ac2', text: '做重大决定时，你通常会？', options: [{ label: '反复纠结，迟迟不定', value: 1 },{ label: '参考意见但偶尔犹豫', value: 2 },{ label: '果决干脆，快速拍板', value: 3 }] },
+    { id: 'q22', dim: 'Ac2', text: '挑一件衣裳时，你的习惯是？', options: [{ label: '选半天拿不定主意', value: 1 },{ label: '比较几件后决定', value: 2 },{ label: '一眼相中，直接拿走', value: 3 }] },
+    { id: 'q23', dim: 'Ac3', text: '别人评价你“执行力强”，你觉得符合吗？', options: [{ label: '拖延晚期，死线战神', value: 1 },{ label: '偶尔高效，偶尔躺平', value: 2 },{ label: '雷厉风行，今日事今日毕', value: 3 }] },
+    { id: 'q24', dim: 'Ac3', text: '你制定的日常计划完成度通常？', options: [{ label: '很少完成，计划落灰', value: 1 },{ label: '一半一半', value: 2 },{ label: '几乎都能按步完成', value: 3 }] },
+    { id: 'q25', dim: 'So1', text: '在宴席上遇到陌生人，你会主动攀谈吗？', options: [{ label: '绝不主动，害怕社交', value: 1 },{ label: '等别人先开口', value: 2 },{ label: '主动结交，谈笑风生', value: 3 }] },
+    { id: 'q26', dim: 'So1', text: '加入一个新的诗社，你的表现是？', options: [{ label: '默默坐在角落', value: 1 },{ label: '观察之后再参与', value: 2 },{ label: '马上成为活跃核心', value: 3 }] },
+    { id: 'q27', dim: 'So2', text: '与人相处时，你的“心理距离”通常？', options: [{ label: '容易交心，没有防线', value: 1 },{ label: '有基本界限', value: 2 },{ label: '高墙深垒，很难靠近', value: 3 }] },
+    { id: 'q28', dim: 'So2', text: '你不喜欢的人向你示好，你会？', options: [{ label: '直接接纳，怕伤和气', value: 1 },{ label: '礼貌回应但保持距离', value: 2 },{ label: '明确划清界限', value: 3 }] },
+    { id: 'q29', dim: 'So3', text: '在不同人面前，你的言行差别大吗？', options: [{ label: '始终如一，表里如一', value: 1 },{ label: '稍有调整', value: 2 },{ label: '见人说人话，面具很多', value: 3 }] },
+    { id: 'q30', dim: 'So3', text: '若心里对长辈有意见，你会？', options: [{ label: '直接坦率说出', value: 1 },{ label: '斟酌后委婉表达', value: 2 },{ label: '隐藏想法，维持体面', value: 3 }] }
+  ];
+
+  // 全局应用状态
+  let app = { shuffledQuestions: [], answers: {}, previewMode: false };
+
+  // 页面元素
+  const screens = {
+    intro: document.getElementById('intro'),
+    questions: document.getElementById('questions'),
+    result: document.getElementById('result')
+  };
+  const questionListDiv = document.getElementById('questionList');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const submitBtn = document.getElementById('submitBtn');
+  const testHint = document.getElementById('testHint');
+
+  // 辅助函数
+  function showScreen(name) {
+    Object.entries(screens).forEach(([key, el]) => {
+      if (el) el.classList.toggle('active', key === name);
+    });
+    window.scrollTo({ top: 0 });
+  }
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function updateProgress() {
+    const total = app.shuffledQuestions.length;
+    const done = app.shuffledQuestions.filter(q => app.answers[q.id] !== undefined).length;
+    progressBar.style.width = `${(done/total)*100}%`;
+    progressText.textContent = `${done} / ${total}`;
+    const complete = done === total && total > 0;
+    submitBtn.disabled = !complete;
+    testHint.textContent = complete ? '全卷答毕，点击解签以窥金陵判词。' : '请依心而答，全选后方见分晓。';
+  }
+
+  function renderQuestions() {
+    const visible = app.shuffledQuestions;
+    questionListDiv.innerHTML = '';
+    visible.forEach((q, idx) => {
+      const card = document.createElement('article');
+      card.className = 'question';
+      card.innerHTML = `
+        <div class="question-meta">
+          <div class="badge">第${idx+1} 问 · 大观园鉴</div>
+          <div>心性映照</div>
+        </div>
+        <div class="question-title">${q.text}</div>
+        <div class="options">
+          ${q.options.map((opt, i) => {
+            const code = ['甲','乙','丙'][i];
+            const checked = app.answers[q.id] === opt.value ? 'checked' : '';
+            return `<label class="option">
+                      <input type="radio" name="${q.id}" value="${opt.value}" ${checked} />
+                      <div class="option-code">${code}</div>
+                      <div>${opt.label}</div>
+                    </label>`;
+          }).join('')}
+        </div>
+      `;
+      questionListDiv.appendChild(card);
+    });
+    // 绑定所有单选按钮的变化事件
+    document.querySelectorAll('input[type="radio"]').forEach(inp => {
+      inp.addEventListener('change', (e) => {
+        app.answers[e.target.name] = Number(e.target.value);
+        updateProgress();
+      });
+    });
+    updateProgress();
+  }
+
+  // 计算匹配结果
+  function sumToLevel(score) {
+    if (score <= 3) return 'L';
+    if (score === 4) return 'M';
+    return 'H';
+  }
+  function levelNum(l) {
+    return { L:1, M:2, H:3 }[l];
+  }
+  function parsePattern(p) {
+    return p.replace(/-/g,'').split('');
+  }
+
+  function computeResult() {
+    const rawScores = {};
+    Object.keys(dimensionMeta).forEach(d => rawScores[d] = 0);
+    questions.forEach(q => {
+      if (app.answers[q.id]) rawScores[q.dim] += app.answers[q.id];
+    });
+    const levels = {};
+    Object.entries(rawScores).forEach(([d, s]) => { levels[d] = sumToLevel(s); });
+    const userVector = dimensionOrder.map(d => levelNum(levels[d]));
+    const ranked = NORMAL_DREAM_TYPES.map(tp => {
+      const vec = parsePattern(tp.pattern).map(levelNum);
+      let dist = 0, exact = 0;
+      for (let i = 0; i < vec.length; i++) {
+        const diff = Math.abs(userVector[i] - vec[i]);
+        dist += diff;
+        if (diff === 0) exact++;
+      }
+      const sim = Math.max(0, Math.round((1 - dist / 30) * 100));
+      return { ...tp, ...DREAM_LIBRARY[tp.code], distance: dist, exact, similarity: sim };
+    }).sort((a,b) => a.distance - b.distance || b.exact - a.exact || b.similarity - a.similarity);
+    const best = ranked[0];
+    if (best.similarity < 58) {
+      const fallback = { ...DREAM_LIBRARY["LIU_LAOLAO"], similarity: best.similarity };
+      return { finalType: fallback, modeKicker: '🌾 村野智者·刘姥姥', badge: `大智若愚 · 匹配度 ${best.similarity}%`, sub: '厚土藏真，你是豁达的刘姥姥', levels, rawScores };
+    }
+    return { finalType: best, modeKicker: `金陵正册 · ${best.cn}`, badge: `情榜考语 · 匹配度 ${best.similarity}%`, sub: best.intro, levels, rawScores };
+  }
+
+  function renderResult() {
+    const res = computeResult();
+    const type = res.finalType;
+    document.getElementById('resultModeKicker').textContent = res.modeKicker;
+    document.getElementById('resultTypeName').textContent = `${type.cn}`;
+    document.getElementById('matchBadge').textContent = res.badge;
+    document.getElementById('resultTypeSub').textContent = type.intro;
+    document.getElementById('resultDesc').textContent = type.desc;
+    document.getElementById('posterCaption').textContent = `“${type.intro}”`;
+
+    // 图片映射（用户可自行替换实际图片路径）
+    const imageMap = {
+      "JIA_BAOYU": "./images/jiabaoyu.jfif",
+      "LIN_DAIYU": "./images/lindaiyu.jfif",
+      "XUE_BAOCHAI": "./images/xuebaochai.jfif",
+      "WANG_XIFENG": "./images/wangxifeng.jfif",
+      "SHI_XIANGYUN": "./images/shiyangyun.jfif",
+      "JIA_TANCHUN": "./images/jiatanchun.jfif",
+      "JIA_YINGCHUN": "./images/jiayingchun.jfif",
+      "JIA_XICHUN": "./images/jiaxichun.jfif",
+      "MIAO_YU": "./images/miaoyu.jfif",
+      "LI_WAN": "./images/liwan.jfif",
+      "QIN_KEQING": "./images/qinkeqing.jfif",
+      "QING_WEN": "./images/qingwen.jfif",
+      "XI_REN": "./images/xiren.jfif",
+      "PING_ER": "./images/pinger.jfif",
+      "JIA_MU": "./images/jiamu.jfif",
+      "LIU_LAOLAO": "./images/liulaolao.jfif"
+    };
+    const posterImg = document.getElementById('posterImage');
+    const imageSrc = imageMap[type.code];
+    if (imageSrc) {
+      posterImg.src = imageSrc;
+      posterImg.style.display = "block";
+    } else {
+      posterImg.style.display = "none";
+    }
+    posterImg.alt = `${type.cn} 人物像`;
+
+    document.getElementById('funNote').innerHTML = '本测试依曹公笔墨闲设，非学术评定。大观园中人各具风流，你与“' + type.cn + '”有缘，愿君悦纳。';
+
+    const dimListDiv = document.getElementById('dimList');
+    dimListDiv.innerHTML = dimensionOrder.map(dim => {
+      const lvl = res.levels[dim];
+      let exp = "";
+      if (lvl === 'L') exp = '倾向内敛/淡泊';
+      else if (lvl === 'M') exp = '中庸随性，张弛有度';
+      else exp = '鲜明外显，执守自我';
+      return `<div class="dim-item">
+                <div class="dim-item-top">
+                  <div class="dim-item-name">${dimensionMeta[dim].name}</div>
+                  <div class="dim-item-score">${lvl} · ${res.rawScores[dim]||0}分</div>
+                </div>
+                <p>${exp}</p>
+              </div>`;
+    }).join('');
+    showScreen('result');
+  }
+
+  function startTest() {
+    app.answers = {};
+    app.shuffledQuestions = shuffleArray([...questions]);
+    renderQuestions();
+    showScreen('questions');
+  }
+
+  // ----- 绑定所有按钮事件 -----
+  document.getElementById('startBtn').addEventListener('click', startTest);
+  document.getElementById('backIntroBtn').addEventListener('click', () => showScreen('intro'));
+  document.getElementById('submitBtn').addEventListener('click', renderResult);
+  document.getElementById('restartBtn').addEventListener('click', startTest);
+  document.getElementById('toTopBtn').addEventListener('click', () => showScreen('intro'));
+</script>
+</body>
+</html>
