@@ -266,13 +266,12 @@
       align-items: center;
     }
     .poster-image {
-      max-width: 100%;
-      max-height: 200px;
-      object-fit: contain;
-      border-radius: 16px;
-      margin-bottom: 12px;
-      background: #fef0e6;
-    }
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;  /* 确保完整显示，不裁剪 */
+    width: auto;
+    height: auto;
+}
     .poster-caption {
       font-size: 14px;
       color: var(--accent-strong);
