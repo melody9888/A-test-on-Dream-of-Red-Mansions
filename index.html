@@ -693,33 +693,33 @@
     document.getElementById('posterCaption').textContent = `“${type.intro}”`;
 
     // 图片映射（用户可自行替换实际图片路径）
-    const imageMap = {
-     "JIA_BAOYU": "./A-test-on-Dream-of-Red-Mansions/images/jiabaoyu.jfif",
-      "LIN_DAIYU": "./A-test-on-Dream-of-Red-Mansions/images/lindaiyu.jfif",
-      "XUE_BAOCHAI": "./A-test-on-Dream-of-Red-Mansions/images/xuebaochai.jfif",
-      "WANG_XIFENG": "./A-test-on-Dream-of-Red-Mansions/images/wangxifeng.jfif",
-      "SHI_XIANGYUN": "./A-test-on-Dream-of-Red-Mansions/images/shiyangyun.jfif",
-      "JIA_TANCHUN": "./A-test-on-Dream-of-Red-Mansions/images/jiatanchun.jfif",
-      "JIA_YINGCHUN": "./A-test-on-Dream-of-Red-Mansions/images/jiayingchun.jfif",
-      "JIA_XICHUN": "./A-test-on-Dream-of-Red-Mansions/images/jiaxichun.jfif",
-      "MIAO_YU": "./A-test-on-Dream-of-Red-Mansions/images/miaoyu.jfif",
-      "LI_WAN": "./A-test-on-Dream-of-Red-Mansions/images/liwan.jfif",
-      "QIN_KEQING": "./A-test-on-Dream-of-Red-Mansions/images/qinkeqing.jfif",
-      "QING_WEN": "./A-test-on-Dream-of-Red-Mansions/images/qingwen.jfif",
-      "XI_REN": "./A-test-on-Dream-of-Red-Mansions/images/xiren.jfif",
-      "PING_ER": "./A-test-on-Dream-of-Red-Mansions/images/pinger.jfif",
-      "JIA_MU": "./A-test-on-Dream-of-Red-Mansions/images/jiamu.jfif",
-      "LIU_LAOLAO": "./A-test-on-Dream-of-Red-Mansions/images/liulaolao.jfif"
-    };
+  const imageMap = {
+    "JIA_BAOYU": "images/jiabaoyu.jfif",
+    "LIN_DAIYU": "images/lindaiyu.jfif",
+    "XUE_BAOCHAI": "images/xuebaochai.jfif",
+    "WANG_XIFENG": "images/wangxifeng.jfif",
+    "SHI_XIANGYUN": "images/shiyangyun.jfif",
+    "JIA_TANCHUN": "images/jiatanchun.jfif",
+    "JIA_YINGCHUN": "images/jiayingchun.jfif",
+    "JIA_XICHUN": "images/jiaxichun.jfif",
+    "MIAO_YU": "images/miaoyu.jfif",
+    "LI_WAN": "images/liwan.jfif",
+    "QIN_KEQING": "images/qinkeqing.jfif",
+    "QING_WEN": "images/qingwen.jfif",
+    "XI_REN": "images/xiren.jfif",
+    "PING_ER": "images/pinger.jfif",
+    "JIA_MU": "images/jiamu.jfif",
+    "LIU_LAOLAO": "images/liulaolao.jfif"
+};
     const posterImg = document.getElementById('posterImage');
-    const imageSrc = imageMap[type.code];
-    if (imageSrc) {
-      posterImg.src = imageSrc;
-      posterImg.style.display = "block";
-    } else {
-      posterImg.style.display = "none";
-    }
-    posterImg.alt = `${type.cn} 人物像`;
+const imageSrc = imageMap[type.code];
+if (imageSrc) {
+    posterImg.src = imageSrc;
+    posterImg.style.display = "block";
+} else {
+    posterImg.style.display = "none";
+}
+posterImg.alt = `${type.cn} 人物像`;
 
     document.getElementById('funNote').innerHTML = '本测试依曹公笔墨闲设，非学术评定。大观园中人各具风流，你与“' + type.cn + '”有缘，愿君悦纳。';
 
